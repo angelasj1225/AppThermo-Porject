@@ -1,0 +1,71 @@
+clc
+clear all
+
+
+pressure_ratio=14.7;
+p1=100;
+T1=30;
+T3=1288;
+Cpa=1.005;
+Cpg=1.15;
+gamma_air=1.4;
+gamma_gas=1.33;
+nisenc=98.5;
+m=1536000/3600;
+T2s=(T1+273)*((pressure_ratio)^((gamma_air-1)/gamma_air));
+T2=((T2s-(T1+273))/(nisenc/100))+T1;
+T4s=(T3+273)/((pressure_ratio)^((gamma_gas-1)/gamma_gas));
+TR=0.65;
+W12=Cpa*(T2-T1);
+disp('    nisent    nisenc  nth,noreg  nth,reg  Qin,noreg  Qin,reg    Wnet  ')
+disp('   ------------------------------------------------------------------')
+count=0;
+for i = 70:5:100 
+ count = count+1;
+ nisent= i;
+ 
+ T4= T3-(((i)/100)*((T3+273)-T4s));
+ Tx=(TR*(T4-T2))+T2;
+ 
+ W34=Cpg*(T3-T4);
+ W12=Cpa*(T2-T1); 
+ Wnet=W34-W12;
+ Qin_withoutreg=Cpg*(T3-T2);
+ Qin_withreg=Cpg*(T3-Tx);
+
+ nth_withoutreg= (Wnet/Qin_withoutreg)*100;
+ nth_withreg= (Wnet/Qin_withreg)*100;
+ 
+
+ Power_Output=(m*Wnet)*(10^(-3));
+
+ Qdotin_withoutreg=(m*(Qin_withoutreg))*(10^(-3));
+ Qdotin_withreg=(m*(Qin_withreg))*(10^(-3));
+
+ nisent1(count,1)=nisent;
+ T4a(count,1)=T4;
+ Txa(count,1)=Tx;
+ W34b(count,1)=W34;
+ Wnet1(count,1)=Wnet;
+ Qin_withreg1(count,1)=Qin_withreg;
+ Qin_withoutreg1(count,1)=Qin_withoutreg;
+ nth_withreg1(count,1)=nth_withreg;
+ nth_withoutreg1(count,1)=nth_withoutreg;
+ Power_Output1(count,1)=Power_Output;
+ Qdotin_withreg1(count,1)=Qdotin_withreg;
+ Qdotin_withoutreg1(count,1)=Qdotin_withoutreg;
+
+ disp([nisent' nisenc' nth_withoutreg' nth_withreg' Qdotin_withoutreg' Qdotin_withreg' Power_Output' ])
+end
+
+figure(1)
+plot(nisent1,Power_Output1,'x-')
+xlabel('Turbine Isentropic'), ylabel('Power Output'), title('Graph of Power Output against Turbine Isentropic')
+figure(2)
+plot(nisent1,Qdotin_withreg1,'x-',nisent1,Qdotin_withoutreg1,'o-')
+xlabel('Turbine Isentropic'), ylabel('Heat supplied'), 
+title('Graph of heat supplied against turbine isentropic')
+figure(3)
+plot(nisent1,nth_withreg1,'x-',nisent1,nth_withoutreg1,'o-')
+xlabel('Turbine Isentropic'), ylabel('thermal efficiency'), 
+title('Graph of Thermal efficiency against turbine isentropic')
